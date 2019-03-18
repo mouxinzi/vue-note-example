@@ -1,0 +1,14 @@
+{
+  "name": "vue-note-example",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start":"./node_modules/.bin/browser-sync start --server --no-noyify --files='index.html,*.css,*.js'"
+  },
+  "repository": "https://github.com/mouxinzi/vue-note-example.git",
+  "author": "t.k <408509669@qq.com>",
+  "license": "MIT",
+  "dependencies": {
+    "browser-sync": "^2.26.3"
+  }
+}
