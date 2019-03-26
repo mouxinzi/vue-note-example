@@ -1,3 +1,4 @@
+
 const db = new loki('notes',{
   autoload:true,
   autoloadCallback:databaseInitialize,
@@ -10,4 +11,13 @@ function databaseInitialize(){
   if (notes===null) {
     db.addCollection('notes')
   }
+}
+
+function loadCollection(collection){
+  return new Promise(resolve=>{
+    db.loadDatabase({},()=>{
+      const _collection = db.getCollection(collection)||db.addCollection(collection)
+      resolve(_collection)
+    })
+  })
 }
