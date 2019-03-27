@@ -36,6 +36,12 @@ const Note = {
   computed: {
     header(){
       return _.truncate(this.entity.body,{length:30})
+    },
+    updated(){
+      return moment(this.entity.meta.updated).fromNow()
+    },
+    words(){
+      return this.entity.body.trim().length
     }
   },
   methods: {
@@ -45,13 +51,19 @@ const Note = {
         collection.update(this.entity)
         db.saveDatabase()
       })
-    }
+    },
+    destroy() {
+      this.$emit('destroy',this.entity.$loki)
+    },
   },
   components:{
     'editor': Editor
   },
   template: `
     <div class="item">
+      <div class="meta">
+        {{updated}}
+      </div>
       <div class="content">
         <div class="header" @click="open = !open">
           {{ header ||"新建笔记"}}
@@ -62,6 +74,10 @@ const Note = {
         v-bind:entity-object="entity"
         v-on:update="save"
         ></editor>
+        <span>共 {{words}} 字 .</span>
+        <i class="right floated trash alternate outline icon"
+        v-if="open"
+        v-on:click="destroy"></i>
       </div>
       </div>
       
@@ -96,6 +112,17 @@ const Notes = {
          db.saveDatabase()
          this.entities.unshift(entity) 
         })
+    },
+    destroy(id){
+      const _entities = this.entities.filter((entity)=>{
+          return entity.$loki !==id
+      })
+      this.entities=_entities
+      loadCollection('notes')
+        .then(collection=>{
+        collection.remove({'$loki':id})
+         db.saveDatabase()
+        })
     }
   },
   template: `
@@ -111,7 +138,12 @@ const Notes = {
           v-for="entity in entities"
           v-bind:entityObject="entity"
           v-bind:key="entity.$loki"
+          v-on:destroy="destroy"
         ></note>
+        <span class="ui small disabled header"
+          v-if="!this.entities.length">
+            还没有笔记,请添加...
+          </span>
       </div>
     </div>
   `
